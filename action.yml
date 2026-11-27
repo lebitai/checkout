@@ -1,0 +1,107 @@
+name: 'LebitSH Fast Checkout'
+description: 'Drop-in replacement for actions/checkout and useblacksmith/checkout on LebitSH runners with colocated mirror support and safe fallback'
+inputs:
+  repository:
+    description: 'Repository name with owner (defaults to current repository)'
+    required: false
+    default: ''
+  ref:
+    description: 'The branch, tag or SHA to checkout'
+    required: false
+    default: ''
+  token:
+    description: 'Personal access token (PAT) used to fetch the repository'
+    required: false
+    default: ''
+  ssh-key:
+    description: 'SSH key used to fetch the repository'
+    required: false
+    default: ''
+  ssh-known-hosts:
+    description: 'Known hosts in addition to the user and global host key database'
+    required: false
+    default: ''
+  ssh-strict:
+    description: 'Whether to perform strict host key checking'
+    required: false
+    default: 'true'
+  persist-credentials:
+    description: 'Whether to configure the token or SSH key with the local git config'
+    required: false
+    default: 'true'
+  path:
+    description: 'Relative path under $GITHUB_WORKSPACE to place the repository'
+    required: false
+    default: ''
+  clean:
+    description: 'Whether to execute git clean -ffdx && git reset --hard HEAD before fetching'
+    required: false
+    default: 'true'
+  filter:
+    description: 'Partially clone against a given filter'
+    required: false
+    default: ''
+  sparse-checkout:
+    description: 'Do a sparse checkout on given patterns'
+    required: false
+    default: ''
+  sparse-checkout-cone-mode:
+    description: 'Specifies whether to use cone-mode when doing a sparse checkout'
+    required: false
+    default: 'true'
+  fetch-depth:
+    description: 'Number of commits to fetch (0 indicates all history)'
+    required: false
+    default: '1'
+  fetch-tags:
+    description: 'Whether to fetch tags, even if fetch-depth > 0'
+    required: false
+    default: 'false'
+  show-progress:
+    description: 'Whether to show progress status output when fetching'
+    required: false
+    default: 'true'
+  lfs:
+    description: 'Whether to download Git-LFS files'
+    required: false
+    default: 'false'
+  submodules:
+    description: 'Whether to checkout submodules: true or recursive'
+    required: false
+    default: 'false'
+  set-safe-directory:
+    description: 'Add repository path as safe.directory for Git global config'
+    required: false
+    default: 'true'
+outputs:
+  ref:
+    description: 'The branch, tag or SHA that was checked out'
+    value: ${{ steps.checkout.outputs.ref }}
+  commit:
+    description: 'The commit SHA that was checked out'
+    value: ${{ steps.checkout.outputs.commit }}
+runs:
+  using: 'composite'
+  steps:
+    - id: checkout
+      name: Checkout repository via LebitSH
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.repository || github.repository }}
+        ref: ${{ inputs.ref }}
+        token: ${{ inputs.token || github.token }}
+        ssh-key: ${{ inputs.ssh-key }}
+        ssh-known-hosts: ${{ inputs.ssh-known-hosts }}
+        ssh-strict: ${{ inputs.ssh-strict }}
+        persist-credentials: ${{ inputs.persist-credentials }}
+        path: ${{ inputs.path }}
+        clean: ${{ inputs.clean }}
+        filter: ${{ inputs.filter }}
+        sparse-checkout: ${{ inputs.sparse-checkout }}
+        sparse-checkout-cone-mode: ${{ inputs.sparse-checkout-cone-mode }}
+        fetch-depth: ${{ inputs.fetch-depth }}
+        fetch-tags: ${{ inputs.fetch-tags }}
+        show-progress: ${{ inputs.show-progress }}
+        lfs: ${{ inputs.lfs }}
+        submodules: ${{ inputs.submodules }}
+        set-safe-directory: ${{ inputs.set-safe-directory }}
